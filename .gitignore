@@ -1,1 +1,48 @@
+# Personal launch materials
 x_thread.md
+
+# User data (protect from accidental commits)
+*.db
+*.db-shm
+*.db-wal
+conversations.json
+memories.json
+projects.json
+users.json
+extracted/
+
+# Working memory content (templates are tracked, user content is not)
+# Users should track their templates but not their actual session data
+working/*.md
+!templates/Session_Summary_Log.md
+!templates/Open_Questions_Blockers.md
+!templates/Decision_Log.md
+
+# Long-term memory content (templates are tracked, user content is not)
+long-term/*.md
+!templates/INDEX.md
+!templates/Total_Update_Protocol.md
+!templates/Memory_Bootstrap.md
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

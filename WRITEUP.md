@@ -91,11 +91,27 @@ mkdir -p ~/Claude/mcp-memory/conversations
 
 This gives Claude a semantic search database — it can store memories with embeddings and retrieve them by meaning.
 
+**macOS / Linux:**
 ```bash
 cd ~/Claude/mcp-memory
 python3 -m venv venv
-source venv/bin/activate        # On macOS/Linux
-# venv\Scripts\activate          # On Windows
+source venv/bin/activate
+pip install mcp-memory-service
+```
+
+**Windows (PowerShell):**
+```powershell
+cd ~\Claude\mcp-memory
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+pip install mcp-memory-service
+```
+
+**Windows (Command Prompt):**
+```cmd
+cd %USERPROFILE%\Claude\mcp-memory
+python -m venv venv
+venv\Scripts\activate.bat
 pip install mcp-memory-service
 ```
 
@@ -110,12 +126,17 @@ You should see usage info. If you get an ONNX warning, that's fine — it's an o
 
 You need to tell Claude Desktop where the MCP memory server lives. Edit your config file:
 
-**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
-**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
-**Linux:** `~/.config/claude/claude_desktop_config.json`
+The config file location depends on your platform:
 
-Add the memory server configuration:
+| Platform | Config Path |
+|----------|-------------|
+| **macOS** | `~/Library/Application Support/Claude/claude_desktop_config.json` |
+| **Windows** | `%APPDATA%\Claude\claude_desktop_config.json` |
+| **Linux** | `~/.config/claude/claude_desktop_config.json` |
 
+Add the memory server configuration. Note the platform-specific differences in paths:
+
+**macOS / Linux:**
 ```json
 {
   "mcpServers": {
@@ -131,7 +152,25 @@ Add the memory server configuration:
 }
 ```
 
-**Important:** Use full absolute paths, not `~` or `$HOME`. Replace `/FULL/PATH/TO/` with your actual path (e.g., `/Users/yourname/Claude/mcp-memory/...`).
+**Windows:**
+```json
+{
+  "mcpServers": {
+    "memory": {
+      "command": "C:\\Users\\YOURNAME\\Claude\\mcp-memory\\venv\\Scripts\\python.exe",
+      "args": ["-m", "mcp_memory_service.server"],
+      "env": {
+        "MCP_MEMORY_STORAGE_BACKEND": "sqlite_vec",
+        "MCP_MEMORY_SQLITE_PATH": "C:\\Users\\YOURNAME\\Claude\\mcp-memory\\data\\memory.db"
+      }
+    }
+  }
+}
+```
+
+**Important:** Use full absolute paths, not `~` or `$HOME` or environment variables. Replace the path placeholders with your actual paths.
+
+**Common gotcha:** On macOS/Linux, the venv Python is at `venv/bin/python`. On Windows, it's `venv\Scripts\python.exe`. Get this wrong and the server won't start.
 
 Restart Claude Desktop. Check Settings > Developer to verify the memory server shows as connected (green status, not "failed").
 
@@ -229,18 +268,19 @@ Update `INDEX.md` whenever you add a new file so Claude can find it.
 
 This is the memory hygiene system. Without it, memory rots — stale entries accumulate, important things get lost, the signal-to-noise ratio degrades.
 
-When you say **"Total Update"**, Claude executes a 10-layer refresh:
+When you say **"Total Update"**, Claude executes an 11-layer refresh:
 
 1. **Anthropic Memory** — Review and prune the 30 slots
 2. **Long-term docs** — Update if substance changed (usually no-touch)
 3. **Relationship files** — Update communication patterns and open threads
 4. **INDEX** — Ensure all files are cataloged accurately
 5. **Infrastructure Notes** — Update if tools or configs changed
-6. **Ad hoc items** — Store any new document with lasting value
-7. **Decision Log** — Append decisions from the session
-8. **Open Questions** — Refresh what's unresolved
-9. **Session Summary** — Log what happened
-10. **Prune stale memory** — Remove superseded or irrelevant entries
+6. **MCP Memory Database** — Store key session insights with tags for semantic search
+7. **Ad hoc items** — Store any new document with lasting value
+8. **Decision Log** — Append decisions from the session
+9. **Open Questions** — Refresh what's unresolved
+10. **Session Summary** — Log what happened
+11. **Prune stale memory** — Remove superseded or irrelevant entries
 
 Run this after meaningful sessions. It takes a few minutes. Claude reports completion of each layer so you can track progress.
 

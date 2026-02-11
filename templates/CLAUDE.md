@@ -47,9 +47,23 @@ When the user says **"Total Update"**, execute the protocol defined in:
 
 Report completion of each layer. If a layer has no changes, say so and move on.
 
+## MCP Memory Database
+
+You have access to a semantic search memory database via MCP tools:
+
+- **`memory_store`** — Store a memory with tags. Use for key insights, decisions, discoveries.
+  - Tag with categories: `decision`, `technical`, `relationship`, `project`, `insight`
+  - Don't duplicate what's in markdown files — the DB is for searchable fragments
+- **`memory_search`** — Semantic search across all stored memories. Use when you need to find "anything about X."
+- **`memory_list`** — Browse stored memories by tag or type.
+- **`memory_health`** — Check that the database is connected and working.
+
+During Total Updates, store key session insights via `memory_store`. This builds the semantic search layer over time.
+
 ## Conversation Archive Search
 
 When you need to recall a specific past conversation:
 1. Read `mcp-memory/conversations/conversation_index.md` to locate it
 2. Ask the user to run `extract_conversations.py` with the relevant index number
 3. Or search `conversation_index.json` programmatically for keyword matches
+4. For ad-hoc searches: `python3 scan_conversations.py --search "your search terms"`
