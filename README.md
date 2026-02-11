@@ -66,7 +66,7 @@ hippoclaudus/
 ├── templates/
 │   ├── CLAUDE.md                      # Drop into your project root (auto-loads in Claude Code)
 │   ├── Memory_Bootstrap.md            # Upload to Claude Desktop project knowledge bases
-│   ├── Total_Update_Protocol.md       # 11-layer memory hygiene protocol
+│   ├── Total_Update_Protocol.md       # Legacy memory hygiene checklist (superseded by local AI engine)
 │   ├── Infrastructure_Notes.md        # Environment and tooling tracker
 │   ├── INDEX.md                       # Master index template for long-term memory
 │   ├── Session_Summary_Log.md         # Working memory: session tracking
@@ -143,18 +143,18 @@ MLX users point to a HuggingFace model name (e.g., `mlx-community/Phi-3-mini-4k-
 
 **During a session:** Claude reads deeper files only when relevant — relationship context when discussing people, infrastructure notes when debugging tools, identity documents when the conversation warrants it. Key insights are stored to the MCP database for semantic search.
 
-**Session end ("Total Update"):** You say "Total Update" and Claude executes a structured 11-layer refresh — updating memory slots, storing session insights to the semantic database, revising long-term files if substance changed, appending to the session log, pruning stale entries.
+**Session end:** The local AI engine handles what used to be manual. The consolidator compresses your session log into a structured State Delta. The compactor deduplicates stale or overlapping memories. The tagger enriches sparse entries with extracted entities.
 
-**Between sessions (local AI):** Run the consolidator to compress your session log into a State Delta. Run the compactor to deduplicate. Run the predictor to generate a PRELOAD.md briefing so your next session starts warm.
+**Between sessions:** Run the predictor to generate a PRELOAD.md briefing — active context, unresolved threads, suggested first moves — so your next session starts warm instead of cold.
 
 **Deep recall:** When you reference something from months ago, Claude searches the conversation index, locates the relevant conversation, and extracts it. Ad-hoc search is also available: `python3 scan_conversations.py --search "your terms"`.
 
 ## Design Principles
 
 1. **Selective loading** — Don't dump everything into context at startup. Load the index, load working memory, read deeper on demand.
-2. **Signal over noise** — The Total Update protocol explicitly says: don't pad entries for completeness. If nothing changed, say so.
+2. **Signal over noise** — Don't pad entries for completeness. If nothing changed, say so.
 3. **Three speeds** — Instant (memory slots), fast (file reads), slow (archive search). Match the retrieval method to the need.
-4. **Memory hygiene** — Without pruning, memory rots. The Total Update protocol includes explicit pruning as a required step. The compactor automates it.
+4. **Memory hygiene** — Without pruning, memory rots. The compactor automates deduplication and the consolidator compresses sessions into dense State Deltas.
 5. **Human in the loop** — The conversation archive search involves asking the user to run extraction scripts. This is intentional — it keeps the human aware of what's being recalled.
 6. **Local first** — Everything runs on your machine. No external services, no cloud dependencies, no accounts to create. The local LLM runs entirely on-device.
 
