@@ -10,7 +10,7 @@ This folder contains Claude's persistent memory — documents that encode relati
 
 | File | Description |
 |------|-------------|
-| `Total_Update_Protocol.md` | Defines the "Total Update" command — memory refresh checklist |
+| `Total_Update_Protocol.md` | Legacy reference — maps old manual protocol to new local AI engine modules |
 | `Infrastructure_Notes.md` | Hardware, MCP config, tools, paths, known issues |
 
 ## Relationship Files
@@ -59,4 +59,4 @@ These files accumulate between conversation archive exports, then reset.
 
 **Past conversation lookup:** Use `conversation_index.md` to locate, then run `extract_conversations.py` for specific indices.
 
-**Total Update:** Execute all 10 layers per protocol when user says "Total Update."
+**Memory maintenance:** Handled by the local AI engine — run the consolidator, compactor, tagger, and predictor after sessions.

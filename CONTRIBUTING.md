@@ -10,7 +10,7 @@ Every contribution must respect these:
 Claude should never load everything at session start. The system is designed for lazy loading — read the index, read working memory, pull deeper files only when needed. PRs that add automatic bulk-loading of files will be rejected.
 
 ### 2. Signal Over Noise
-If it doesn't add clear value, leave it out. Don't pad templates with placeholder content. Don't add optional fields "just in case." The Total Update protocol explicitly says: if nothing changed, say so and move on. Apply that principle to code too.
+If it doesn't add clear value, leave it out. Don't pad templates with placeholder content. Don't add optional fields "just in case." The consolidator only stores what changed — apply that principle to code too.
 
 ### 3. Memory Hygiene
 Every new memory layer or storage mechanism must include a corresponding cleanup/pruning path. Memory systems that only grow degrade over time. If you add a way to store something, add a way to prune it.

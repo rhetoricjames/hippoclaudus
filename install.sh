@@ -103,7 +103,7 @@ echo -e "${GREEN}[4/5]${NC} Copying templates..."
 # Long-term memory
 cp "$TEMPLATE_DIR/INDEX.md" "$BASE_PATH/mcp-memory/long-term/"
 cp "$TEMPLATE_DIR/Total_Update_Protocol.md" "$BASE_PATH/mcp-memory/long-term/"
-echo "  ✓ Copied INDEX.md and Total_Update_Protocol.md to long-term/"
+echo "  ✓ Copied INDEX.md and Total_Update_Protocol.md (legacy reference) to long-term/"
 
 # Working memory
 cp "$TEMPLATE_DIR/Session_Summary_Log.md" "$BASE_PATH/mcp-memory/working/"

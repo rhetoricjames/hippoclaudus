@@ -32,7 +32,7 @@ This is where Hippoclaudus adds real value. A directory of markdown files on you
 mcp-memory/
 ├── long-term/          # Things that change slowly
 │   ├── INDEX.md        # Master catalog — Claude reads this first
-│   ├── Total_Update_Protocol.md
+│   ├── Total_Update_Protocol.md  # Legacy — see local AI engine
 │   ├── Infrastructure_Notes.md
 │   ├── Relationship_Alice.md
 │   ├── Relationship_Bob.md
@@ -45,7 +45,7 @@ mcp-memory/
     └── memory.db       # MCP sqlite-vec database (semantic search)
 ```
 
-**Long-term files** hold things that evolve slowly: who the key people are, what the project is about, infrastructure details, reference material. You update these during "Total Updates" (see below), not every session.
+**Long-term files** hold things that evolve slowly: who the key people are, what the project is about, infrastructure details, reference material. The local AI engine's consolidator and compactor handle updates automatically after sessions.
 
 **Working memory files** accumulate session-to-session: what happened, what's unresolved, what was decided. They reset periodically when you export your conversation history (creating a fresh baseline).
 
@@ -181,7 +181,7 @@ From the Hippoclaudus templates directory:
 ```bash
 # Long-term memory templates
 cp templates/INDEX.md ~/Claude/mcp-memory/long-term/
-cp templates/Total_Update_Protocol.md ~/Claude/mcp-memory/long-term/
+cp templates/Total_Update_Protocol.md ~/Claude/mcp-memory/long-term/   # Legacy reference
 
 # Working memory templates
 cp templates/Session_Summary_Log.md ~/Claude/mcp-memory/working/
@@ -206,7 +206,7 @@ Now edit `~/Claude/CLAUDE.md` to replace the placeholder paths with your actual 
 - Where all the files live
 - What to read at session start
 - What to read on demand
-- How "Total Update" works
+- How the local AI engine handles memory maintenance
 
 Every Claude Code session that starts from `~/Claude/` will automatically know about the entire memory system.
 
@@ -264,25 +264,28 @@ Update `INDEX.md` whenever you add a new file so Claude can find it.
 
 ---
 
-## The Total Update Protocol
+## Memory Maintenance (Local AI Engine)
 
-This is the memory hygiene system. Without it, memory rots — stale entries accumulate, important things get lost, the signal-to-noise ratio degrades.
+Memory hygiene is critical — without it, stale entries accumulate, important things get lost, and the signal-to-noise ratio degrades. In v1, this was a manual process. In v2, the local AI engine handles it automatically.
 
-When you say **"Total Update"**, Claude executes an 11-layer refresh:
+After a session, run the engine's modules:
 
-1. **Anthropic Memory** — Review and prune the 30 slots
-2. **Long-term docs** — Update if substance changed (usually no-touch)
-3. **Relationship files** — Update communication patterns and open threads
-4. **INDEX** — Ensure all files are cataloged accurately
-5. **Infrastructure Notes** — Update if tools or configs changed
-6. **MCP Memory Database** — Store key session insights with tags for semantic search
-7. **Ad hoc items** — Store any new document with lasting value
-8. **Decision Log** — Append decisions from the session
-9. **Open Questions** — Refresh what's unresolved
-10. **Session Summary** — Log what happened
-11. **Prune stale memory** — Remove superseded or irrelevant entries
+```bash
+python -m hippoclaudus.consolidator   # Compress session into a State Delta
+python -m hippoclaudus.compactor      # Find and merge duplicate memories
+python -m hippoclaudus.tagger         # Enrich tags on sparse memories
+python -m hippoclaudus.predictor      # Generate PRELOAD.md briefing for next session
+```
 
-Run this after meaningful sessions. It takes a few minutes. Claude reports completion of each layer so you can track progress.
+The **consolidator** reads your latest session log and compresses it into a structured State Delta — a dense summary of what changed, who was mentioned, what's unresolved, and any emotional signals detected. This gets stored in memory.db with entity-derived tags.
+
+The **compactor** computes token-overlap similarity between all memory pairs, sends high-similarity pairs to the local LLM for evaluation, and merges or soft-deletes duplicates and superseded entries.
+
+The **tagger** runs memories through the LLM to extract people, projects, tools, and topics, enriching sparse tags so semantic search works better.
+
+The **predictor** generates a PRELOAD.md briefing — active context, unresolved threads, key people state, suggested first moves — so your next session starts warm instead of cold.
+
+Everything runs locally on your machine. No API calls. No tokens spent. No data leaves your computer.
 
 ---
 
@@ -290,11 +293,11 @@ Run this after meaningful sessions. It takes a few minutes. Claude reports compl
 
 **Selective loading, not context dumping.** The biggest mistake would be loading everything at session start. That wastes tokens and pollutes context. Instead: load the index, load working memory, read deeper only when needed.
 
-**Signal over noise.** The Total Update protocol explicitly says: if nothing changed, say so and move on. Don't pad entries for completeness. Memory should be high-signal.
+**Signal over noise.** If nothing changed, don't pad entries for completeness. The local AI engine follows this too — the consolidator only stores what actually changed. Memory should be high-signal.
 
 **Three speeds for three needs.** Instant (memory slots) for what you need every session. Fast (file reads) for foundational context. Slow (archive search) for deep history. Match the retrieval method to the need.
 
-**Memory hygiene is non-negotiable.** Without pruning, memory systems degrade. The Total Update includes explicit pruning as a required step, not an optional nice-to-have.
+**Memory hygiene is non-negotiable.** Without pruning, memory systems degrade. The compactor automates deduplication and the consolidator compresses sessions into dense State Deltas — pruning is built into the engine, not a manual chore.
 
 **Human in the loop for deep recall.** The conversation archive search involves the user running extraction scripts. This is intentional — it keeps you aware of what's being recalled and prevents Claude from silently loading huge amounts of history.
 
@@ -318,7 +321,7 @@ Run this after meaningful sessions. It takes a few minutes. Claude reports compl
 
 ## What This Isn't
 
-This isn't AGI memory. It doesn't automatically learn or self-organize. It's infrastructure — filing cabinets, indexes, and a janitor schedule. The value comes from the structure and the discipline of maintaining it.
+This isn't AGI memory. But with the local AI engine, it does automatically consolidate, deduplicate, tag, and predict — so it's more than just filing cabinets. The value comes from the structure and the automation that maintains it.
 
 It also doesn't replace good prompting. You still need to tell Claude what you need. But instead of re-explaining your entire world every session, you tell it once, store it properly, and it picks up where you left off.
 

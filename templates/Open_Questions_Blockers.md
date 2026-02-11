@@ -1,5 +1,5 @@
 # Open Questions & Blockers
-*Refresh during each Total Update. Reset after new conversation archive download.*
+*Refreshed automatically by the local AI engine. Reset after new conversation archive download.*
 
 ---
 

@@ -9,7 +9,7 @@
 
 Hippoclaudus v1 shipped the core architecture: a three-tier memory system for Claude using markdown files, an MCP semantic database, and a conversation archive scanner. It worked, but setup was manual (six discrete steps), there was no way to verify your installation, the conversation scanner used a flat keyword list with no category context, and the documentation assumed macOS.
 
-v2 closes those gaps. It adds a local AI engine for automated memory management (consolidation, deduplication, tagging, session prediction, relationship profiling), cross-platform LLM inference (MLX on Apple Silicon, llama-cpp-python on Windows/Linux), automated installation, a diagnostic tool, category-aware conversation scoring, an ad-hoc search mode, externalized keyword configuration, cross-platform documentation, MCP database integration into the update protocol, and project governance files for outside contributors.
+v2 closes those gaps. It adds a local AI engine for automated memory management (consolidation, deduplication, tagging, session prediction, relationship profiling), cross-platform LLM inference (MLX on Apple Silicon, llama-cpp-python on Windows/Linux), automated installation, a diagnostic tool, category-aware conversation scoring, an ad-hoc search mode, externalized keyword configuration, cross-platform documentation, MCP database integration via the consolidator, and project governance files for outside contributors.
 
 ---
 
@@ -112,7 +112,7 @@ A pass/fail health checker that validates the entire installation. Checks:
 
 - **Python version** (requires 3.10+)
 - **Directory structure** — all four required subdirectories exist
-- **Key files** — CLAUDE.md, INDEX.md, Total_Update_Protocol.md, all three working memory templates
+- **Key files** — CLAUDE.md, INDEX.md, Total_Update_Protocol.md (legacy reference), all three working memory templates
 - **MCP memory database** — `memory.db` exists, reports size
 - **Python environment** — venv exists, `mcp-memory-service` is importable
 - **Claude Desktop config** — config file exists, memory server is configured, command path is valid, database path is valid
@@ -151,7 +151,7 @@ The scanner loads this file automatically. If `keywords.yaml` isn't present or t
 
 ### `templates/Infrastructure_Notes.md`
 
-Template for tracking the user's specific environment: hardware, OS, MCP configuration, key paths, available tools, and known issues. Referenced by Layer 5 of the Total Update Protocol.
+Template for tracking the user's specific environment: hardware, OS, MCP configuration, key paths, available tools, and known issues.
 
 ---
 
@@ -179,7 +179,7 @@ The setup guide previously showed a single code block with a commented-out Windo
 - Platform-specific MCP config JSON (forward slashes vs. backslashes, `bin/python` vs. `Scripts/python.exe`)
 - Config file locations in a clean table format
 - Explicit callout of the common macOS-vs-Windows venv path gotcha
-- Total Update Protocol section updated to reference the new 11-layer structure
+- Memory maintenance section rewritten to cover local AI engine (replaces manual Total Update protocol)
 
 ### `templates/CLAUDE.md` — MCP Memory Instructions
 
@@ -192,16 +192,9 @@ Added a new section documenting the MCP memory database tools available to Claud
 
 Also added the ad-hoc search capability to the conversation archive instructions (Step 4).
 
-### `templates/Total_Update_Protocol.md` — New Layer 6
+### `templates/Total_Update_Protocol.md` — Converted to Legacy Reference
 
-The protocol expanded from 10 to 11 layers. The new Layer 6 (MCP Memory Database) instructs Claude to:
-
-- Store key session insights via `memory_store` with appropriate tags
-- Categorize using tags: `decision`, `technical`, `relationship`, `project`, `insight`
-- Use the database for searchable fragments, not full document duplication
-- Build the semantic search layer incrementally over time
-
-All subsequent layers renumbered accordingly (Ad Hoc Items became Layer 7, Decision Log became Layer 8, etc.).
+The manual 11-layer protocol has been replaced by the local AI engine. The file now serves as a legacy reference document that maps each old manual step to its automated replacement module (consolidator, compactor, tagger, predictor, comm profiler).
 
 ### `.gitignore` — Comprehensive Protection
 
@@ -227,7 +220,7 @@ This prevents users from accidentally committing their personal memory data, dat
 1. Copy `keywords.yaml` to their conversations directory and customize it
 2. Re-run `scan_conversations.py` to get category-aware scoring
 3. Update their `CLAUDE.md` with the new MCP memory instructions section
-4. Update their `Total_Update_Protocol.md` to the 11-layer version
+4. Replace their `Total_Update_Protocol.md` with the new legacy reference version
 5. Run `doctor.py` to verify their installation is healthy
 
 **Contributors** have clear guardrails via `CONTRIBUTING.md` and can validate their changes against `doctor.py`.

@@ -118,7 +118,7 @@ def run_checks(base_path):
     exists = os.path.isfile(protocol)
     if not exists:
         all_passed = False
-    print(f"  {check_mark(exists)} Total_Update_Protocol.md")
+    print(f"  {check_mark(exists)} Total_Update_Protocol.md {'(legacy reference)' if exists else ''}")
 
     working_files = [
         "mcp-memory/working/Session_Summary_Log.md",

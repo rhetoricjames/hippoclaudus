@@ -30,7 +30,7 @@ Do NOT read all long-term memory files at session start — that's wasteful. Ins
 
 ## Important
 
-- "Total Update" is a specific command — see `Total_Update_Protocol.md` for the full checklist
+- Memory maintenance is handled by the local AI engine (consolidator, compactor, tagger, predictor) — see `Total_Update_Protocol.md` for the legacy-to-new mapping
 - Conversation archive stays in cold storage — use the index to locate, extract on demand only
 
 ---

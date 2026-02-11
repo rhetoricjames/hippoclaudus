@@ -24,12 +24,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 - `CONTRIBUTING.md` with design principles as constraints for PRs
 - `CHANGELOG.md` to track releases
 - Infrastructure Notes template
-- MCP memory database layer (Layer 6) in Total Update Protocol
+- MCP memory database integration (consolidator stores State Deltas with entity-derived tags)
 - Cross-platform instructions in WRITEUP.md (macOS, Linux, Windows)
 - Comprehensive `.gitignore` protecting user data from accidental commits
 
 ### Changed
-- Total Update Protocol expanded from 10 to 11 layers (added MCP database step)
+- Total Update Protocol replaced by local AI engine (file retained as legacy reference)
 - `scan_conversations.py` now supports `keywords.yaml` with category-level scoring
 - CLAUDE.md template now includes MCP memory tool instructions
 - README rewritten to cover local AI engine, cross-platform backends, and updated file tree
@@ -41,7 +41,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 - Three-tier memory architecture (short-term, foundational, deep recall)
 - CLAUDE.md template for Claude Code auto-loading
 - Memory Bootstrap template for Claude Desktop projects
-- Total Update Protocol (10-layer memory hygiene)
+- Total Update Protocol (manual memory hygiene checklist — later superseded by local AI engine in v1.1.0)
 - INDEX.md master catalog template
 - Working memory templates (Session Summary, Open Questions, Decision Log)
 - `scan_conversations.py` — conversation archive indexer

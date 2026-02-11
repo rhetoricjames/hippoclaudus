@@ -12,7 +12,7 @@ You have a three-tier persistent memory system.
 ### Tier 1: Short-Term (Anthropic's 30 memory slots)
 - Session-to-session recall of recent context
 - Managed via `memory_user_edits`
-- Pruned during Total Updates
+- Pruned automatically by the local AI engine (compactor)
 
 ### Tier 2: Foundational (Long-Term Files + MCP Database)
 - **Long-term markdown files:** `YOUR_PATH/mcp-memory/long-term/`
@@ -40,13 +40,6 @@ Do NOT read all long-term files upfront. Read deeper on demand:
 - **Infrastructure Notes** — when troubleshooting tools or config
 - **Decision Log** — when referencing a past decision
 
-## Total Update Command
-
-When the user says **"Total Update"**, execute the protocol defined in:
-`mcp-memory/long-term/Total_Update_Protocol.md`
-
-Report completion of each layer. If a layer has no changes, say so and move on.
-
 ## MCP Memory Database
 
 You have access to a semantic search memory database via MCP tools:
@@ -58,7 +51,7 @@ You have access to a semantic search memory database via MCP tools:
 - **`memory_list`** — Browse stored memories by tag or type.
 - **`memory_health`** — Check that the database is connected and working.
 
-During Total Updates, store key session insights via `memory_store`. This builds the semantic search layer over time.
+Store key session insights via `memory_store` as they arise. The local AI engine's consolidator also stores structured State Deltas after each session. This builds the semantic search layer over time.
 
 ## Conversation Archive Search
 
