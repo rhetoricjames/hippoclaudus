@@ -12,7 +12,6 @@ users.json
 extracted/
 
 # Working memory content (templates are tracked, user content is not)
-# Users should track their templates but not their actual session data
 working/*.md
 !templates/Session_Summary_Log.md
 !templates/Open_Questions_Blockers.md
@@ -24,9 +23,21 @@ long-term/*.md
 !templates/Total_Update_Protocol.md
 !templates/Memory_Bootstrap.md
 
+# Personal data — NEVER commit
+long-term/
+working/
+data/memory.db
+data/memory.db-shm
+data/memory.db-wal
+Conversations_Feb_7_26/
+
 # Python
 venv/
+.venv/
 __pycache__/
+*.py[cod]
+*$py.class
+*.so
 *.pyc
 *.pyo
 *.egg-info/
@@ -36,9 +47,11 @@ build/
 # Environment
 .env
 .env.local
+*.log
 
 # OS
 .DS_Store
+._*
 Thumbs.db
 
 # IDE
