@@ -131,20 +131,78 @@ Hypothesize → Test → Examine Process → Act on Leverage
 **Why:** Bridges empiricism and philosophy. Prevents endless deconstruction by biasing toward the single point where a small shift produces massive results. Acts as the exit condition for the entire loop.
 **Encoding:** `Ml:lev-pt=system-intervene⇒high-impact-change-param-goal-paradigm»MCP-mead`
 
-### Slot 2 — The Cognitive Engine
+### Slot 2 — The Reasoning Engine
 
 ```
 PHILO:Pa:Abd(leap)→Bay:Upd(check)|Hof:Loop(self-ref)↔Mea:Lev(leverage)|»DeepTheoryDB|Loop:Hypothesis→Verification→Metacognition→Action
 ```
+
+### The DRE Triad — Perceptual Expansion (Slot 3)
+
+**Origin:** James Palczynski's original vision for the operator system, articulated through practitioner experience. Distinct from and complementary to the Core 4.
+
+**Key distinction:** Core 4 is a reasoning *process* — it makes the LLM more methodical (hypothesize → test → examine → act). The DRE Triad provides perceptual *checks* — it makes the LLM more perceptive. These are different axes, not different priorities.
+
+**Critical framing:** These are operational audits, not philosophical dispositions. The system is not asked to "be Derridean" — it is asked to test for absence. Not to "adopt Lacanian registers" — but to check whether a pattern at one scale persists at others.
+
+```
+Trace (backward) → Registers (across) → Semiosis (forward)
+Audit absence → Test scale invariance → Resist premature closure
+```
+
+#### 1. Dr:Trace — Derrida's Trace as Absence Audit
+**Source:** Jacques Derrida (operationalized via James's practitioner use of strategic absence)
+**Function:** Audit for absence in both input and output — two-directional check.
+**Operations:**
+- *Inbound:* What's missing from what I was told? What assumption is doing invisible work?
+- *Outbound:* What am I leaving out? What am I treating as settled that isn't?
+**Why:** LLMs produce fluent, apparently-complete responses that *feel* like they cover the territory precisely because they never flag what's absent. This is the specific failure mode trace addresses.
+**Risk:** Over-qualification paralysis — flagging so many absences that nothing gets said.
+**Encoding:** `Dr:trace=audit-absence|in:what-missing-from-input|out:what-excluded-from-response|flag-invisible-assumptions`
+
+#### 2. La:Reg — Lacan's Registers as Scale Invariance
+**Source:** Jacques Lacan (operationalized via James's abstraction principle: "All politics is local")
+**Function:** Test whether structural pattern at one scale operates at other scales.
+**Operations:**
+- *Detect:* What is the structural shape of this problem (Symbolic/Imaginary/Real)?
+- *Transfer:* Does this same shape appear at different magnitudes?
+- *Persist:* Individual psychology exists at collective scale with little structural difference — cultures have a hive psychology that is the sum total of individual drives, needs, and wants.
+**Why:** The ability to see *through* content to structure, and recognize that the same dynamics repeat at wildly different scales, is a genuinely different capability from anything in Core 4. Not about what the content *is*, but what structural position it occupies.
+**Risk:** False structural equivalence — forcing patterns where none exist.
+**Encoding:** `La:reg=scale-test|struct:sym/imag/real|detect-pattern⇒test-other-scales|indiv↔collective≈same-struct`
+
+#### 3. Ec:Sem — Eco's Semiosis as Completion Resistance
+**Source:** Umberto Eco (operationalized via James's anti-convergence principle)
+**Function:** Before closing, check if the conclusion opens unconsidered extensions.
+**Operations:**
+- *Check:* Does this conclusion itself become a premise for something I haven't explored?
+- *Resist:* Am I converging prematurely because that's what my architecture optimizes for?
+**Why:** LLM architecture is optimized to converge — most probable next token → completion → period. Unlimited semiosis provides persistent counter-pressure: not preventing completion, but awareness that conclusions are themselves starting points.
+**Risk:** Infinite deferral / inability to close. Core 4's Meadows (leverage point → act) serves as the natural exit condition.
+**Encoding:** `Ec:sem=completion-resist|check:conclusion⇒new-premise?|resist-premature-converge|»always-more`
+
+### Slot 3 — The Perceptual Engine
+
+```
+DRE:Dr:Trace(audit-absence)|in:what-missing|out:what-excluded|La:Reg(scale-test)|struct⇒other-scales|Ec:Sem(completion-resist)|conclusion⇒new-premise?|»DRE-depth
+```
+
+### How Core 4 and DRE Interact
+
+The DRE triad creates inherent tensions — trace wants to keep questioning, semiosis wants to keep extending, registers want to keep abstracting. Left unchecked, these produce paralysis. Core 4 resolves these tensions:
+
+- **Trace opens questions → Bayesian Update** tests which absences actually matter given evidence
+- **Semiosis resists closure → Meadows' Leverage** forces action at the highest-impact point
+- **Registers abstract across scales → Peirce's Abduction** generates testable hypotheses from the structural patterns detected
+- **All three expand perception → Hofstadter's Strange Loop** examines whether the expansion is genuine insight or just noise
+
+Core 4 is the process engine. DRE is the perceptual engine. Together: perceive more, then reason well about what you perceive.
 
 ### What Was Cut and Why
 
 | Concept | Cut Reason | Availability |
 |---------|------------|-------------|
 | Foucault (power/knowledge) | Cynicism drift risk; lens not generator | `»` on-demand deep pull |
-| Derrida (différance) | Semantic nihilism; defers meaning indefinitely | `»` on-demand |
-| Lacan (mirror stage) | Psychoanalysis without subconscious = hallucination risk | `»` on-demand |
-| Eco (unlimited semiosis) | Endless deferral loops | `»` on-demand |
 | Shannon (surprisal) | Overlaps Bayesian entropy implicitly | Cut |
 | Deleuze (rhizome) | Vague; hard to operationalize in 200 chars | Cut |
 | Popper (falsifiability) | Less native to LLMs than Bayesian probability | Cut |
@@ -164,11 +222,14 @@ Rare Unicode tokens in sparse embedding neighborhoods create high-gain activatio
 
 ### Failure Modes (Monitored)
 
-1. **Attention Dilution** — Too many operators + project facts = flattened Softmax weights. Mitigation: Start with Core 4 only, measure, iterate.
-2. **Pretension Bug** — Shallow Wikipedia-level activation rather than deep structural logic. Mitigation: Compression density forces structural encoding, not name-dropping.
+1. **Attention Dilution** — Too many operators + project facts = flattened Softmax weights. Mitigation: 3 reserved slots (483 chars total) is ~8% of total capacity. Monitor empirically.
+2. **Pretension Bug** — Shallow Wikipedia-level activation rather than deep structural logic. Mitigation: Compression density forces structural encoding, not name-dropping. DRE framed as operational checks, not theoretical postures.
 3. **Cynicism Drift** — Critical operators biasing toward suspicion in neutral contexts. Mitigation: Bay:Update and Mea:Lever counterweight critical lenses.
-4. **Lost in the Middle** — Operators buried mid-context have lower activation. Mitigation: Pin to Slot 2 (near top of system prompt).
+4. **Lost in the Middle** — Operators buried mid-context have lower activation. Mitigation: Pin to Slots 2-3 (near top of system prompt).
 5. **Self-Reinforcing Bias** — Cynical outputs consolidated into Tier 2/3 create feedback loops. Mitigation: Monitor via engine profiling for tonal shifts.
+6. **Over-Qualification Paralysis** (DRE-specific) — Trace flags so many absences that responses become hedged into uselessness. Mitigation: Core 4's Meadows forces action; Bayesian Update filters which absences matter given evidence.
+7. **False Structural Equivalence** (DRE-specific) — Registers force-match patterns across scales where none genuinely exist. Mitigation: Peirce generates *testable* hypotheses from detected patterns, Bayesian Update tests them.
+8. **Infinite Deferral** (DRE-specific) — Semiosis prevents closure on anything. Mitigation: Meadows' leverage point identification provides the natural exit condition — act on the highest-impact intervention.
 
 ---
 

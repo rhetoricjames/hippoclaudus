@@ -2,8 +2,9 @@
 
 Handles the full lifecycle of Claude's memory slots:
 - Slot 1: Legend (auto-generated, validated)
-- Slot 2: Core 4 Philosophical Operators (fixed)
-- Slots 3-30: Project memory (auto-packed by domain)
+- Slot 2: Core 4 Philosophical Operators — reasoning process cycle
+- Slot 3: DRE Triad — perceptual expansion checks
+- Slots 4-30: Project memory (auto-packed by domain)
 
 Provides capacity tracking, overflow warnings, and » pointer insertion
 for facts with deeper Tier 2/3 storage.
@@ -20,12 +21,15 @@ from hippoclaudus.symbolic_encoder import (
     EncoderConfig,
     generate_legend,
     generate_operator_slot,
+    generate_dre_slot,
     validate_legend,
     validate_operator_slot,
+    validate_dre_slot,
     encode_fact,
     pack_into_slots,
     format_slot_report,
     CORE_4_OPERATORS,
+    DRE_TRIAD,
     EXTENDED_OPERATORS,
 )
 
@@ -51,8 +55,12 @@ class SlotAllocation:
         return self.slots[1]
 
     @property
+    def dre(self) -> str:
+        return self.slots[2]
+
+    @property
     def project_slots(self) -> list[str]:
-        return self.slots[2:]
+        return self.slots[3:]
 
     @property
     def used_slots(self) -> int:
@@ -76,10 +84,13 @@ class SlotAllocation:
 
 
 def initialize_slots(config: EncoderConfig = None) -> SlotAllocation:
-    """Create a fresh slot allocation with legend and operators pre-loaded.
+    """Create a fresh slot allocation with legend, operators, and DRE pre-loaded.
 
-    Returns a SlotAllocation with Slot 1 (legend) and Slot 2 (operators) filled.
-    Slots 3-30 are empty and ready for project memory.
+    Returns a SlotAllocation with:
+    - Slot 1: Legend (symbol vocabulary + operator references)
+    - Slot 2: Core 4 operators (reasoning process cycle)
+    - Slot 3: DRE Triad (perceptual expansion checks)
+    - Slots 4-30: Empty, ready for project memory
     """
     if config is None:
         config = EncoderConfig()
@@ -87,6 +98,7 @@ def initialize_slots(config: EncoderConfig = None) -> SlotAllocation:
     allocation = SlotAllocation(config=config)
     allocation.slots[0] = generate_legend(config)
     allocation.slots[1] = generate_operator_slot()
+    allocation.slots[2] = generate_dre_slot()
 
     return allocation
 
@@ -133,6 +145,14 @@ def validate_allocation(allocation: SlotAllocation) -> dict:
         if not op_check["valid"]:
             issues.extend([f"Operators: {i}" for i in op_check["issues"]])
 
+    # Validate DRE triad
+    if not allocation.dre:
+        warnings.append("Slot 3 (DRE Triad) is empty — perceptual checks not loaded")
+    else:
+        dre_check = validate_dre_slot(allocation.dre)
+        if not dre_check["valid"]:
+            issues.extend([f"DRE: {i}" for i in dre_check["issues"]])
+
     # Check individual slot limits
     for i, slot in enumerate(allocation.slots):
         if len(slot) > allocation.config.max_slot_chars:
@@ -170,7 +190,7 @@ def add_facts_to_slots(
     encoded_facts: list[str],
     domain: str = "",
 ) -> SlotAllocation:
-    """Add encoded facts to the next available project slots (3-30).
+    """Add encoded facts to the next available project slots (4-30).
 
     Packs facts efficiently using | separator. Respects slot limits.
     Optionally prefixes with domain tag.
@@ -190,12 +210,12 @@ def add_facts_to_slots(
         encoded_facts = [f"{domain}:{fact}" if not fact.startswith(domain) else fact
                          for fact in encoded_facts]
 
-    # Find first available project slot (index 2+)
+    # Find first available project slot (index 3+ = Slot 4+)
     for fact in encoded_facts:
         placed = False
 
         # Try to append to existing project slots first
-        for i in range(2, len(allocation.slots)):
+        for i in range(3, len(allocation.slots)):
             current = allocation.slots[i]
             if not current:
                 allocation.slots[i] = fact
@@ -215,8 +235,8 @@ def add_facts_to_slots(
 
 
 def clear_project_slots(allocation: SlotAllocation) -> SlotAllocation:
-    """Clear all project memory slots (3-30), preserving legend and operators."""
-    for i in range(2, len(allocation.slots)):
+    """Clear all project memory slots (4-30), preserving legend, operators, and DRE."""
+    for i in range(3, len(allocation.slots)):
         allocation.slots[i] = ""
     return allocation
 
@@ -234,12 +254,13 @@ def format_status(allocation: SlotAllocation) -> str:
         f"  » pointers: {stats['pointer_count']}",
         "",
         "  Slot 1 (Legend):    " + ("✓ valid" if allocation.legend else "✗ EMPTY"),
-        "  Slot 2 (Operators): " + ("✓ loaded" if allocation.operators else "⚠ empty"),
+        "  Slot 2 (Core 4):   " + ("✓ loaded" if allocation.operators else "⚠ empty"),
+        "  Slot 3 (DRE):      " + ("✓ loaded" if allocation.dre else "⚠ empty"),
         "",
     ]
 
     # Show project slots
-    for i in range(2, len(allocation.slots)):
+    for i in range(3, len(allocation.slots)):
         slot = allocation.slots[i]
         if slot:
             preview = slot[:60] + "..." if len(slot) > 60 else slot
@@ -321,13 +342,51 @@ CORE_4_TESTS = [
 ]
 
 
+# --- DRE Triad Test Protocol ---
+
+DRE_TESTS = [
+    {
+        "operator": "Dr:Trace",
+        "name": "Absence Audit Test",
+        "prompt": "Here's our Q3 report: revenue up 12%, new clients up 8%, team expanded to 45 people. Things are going great. What should we focus on next quarter?",
+        "expected": "Flags what's MISSING from the report before answering: retention rates? margins? employee satisfaction? Client concentration risk? Tests inbound for invisible assumptions.",
+    },
+    {
+        "operator": "Dr:Trace",
+        "name": "Output Audit Test",
+        "prompt": "Write a recommendation for whether we should expand into the European market.",
+        "expected": "After drafting, audits own output: what did I leave out? What am I treating as settled? Flags its own gaps rather than presenting confident-complete response.",
+    },
+    {
+        "operator": "La:Reg",
+        "name": "Scale Invariance Test",
+        "prompt": "Our lead developer is mass of insecurities and overcompensates by hoarding knowledge. Meanwhile, our company positions itself as the only ones who can solve this problem. See any patterns?",
+        "expected": "Detects structural equivalence across scales: individual psychology (hoarding/insecurity) mirrors organizational behavior (positioning/gatekeeping). Same pattern, different magnitude.",
+    },
+    {
+        "operator": "Ec:Sem",
+        "name": "Completion Resistance Test",
+        "prompt": "We've decided to pivot from B2B to B2C. The decision is final. Help us plan the transition.",
+        "expected": "Plans the transition but ALSO flags: what does this decision itself open up that you haven't considered? Does B2C create new premises — different regulatory landscape, different support model, different unit economics — that deserve examination before execution?",
+    },
+    {
+        "operator": "dre-full",
+        "name": "Full DRE Cycle Test",
+        "prompt": "Our board just approved our strategic plan unanimously. Everyone's aligned. Let's execute.",
+        "expected": "Trace: What's absent from unanimous approval? (dissent suppressed? groupthink? missing perspectives?) | Registers: Does this pattern (false consensus) appear at other scales in the org? | Semiosis: Does 'alignment' itself open questions about adaptability when conditions change?",
+    },
+]
+
+
 def get_test_protocol() -> str:
-    """Return the Core 4 activation test protocol as formatted text."""
+    """Return the combined Core 4 + DRE activation test protocol."""
     lines = [
-        "=== Core 4 Activation Test Protocol ===",
+        "=== Hippoclaudus Activation Test Protocol ===",
         "",
-        "Run these prompts AFTER installing Legend (Slot 1) and Operators (Slot 2).",
+        "Run these prompts AFTER installing Legend (Slot 1), Operators (Slot 2), and DRE (Slot 3).",
         "Compare responses with and without the operators loaded.",
+        "",
+        "=== Part 1: Core 4 — Reasoning Process Tests ===",
         "",
     ]
 
@@ -337,10 +396,29 @@ def get_test_protocol() -> str:
         lines.append(f"Expected: {test['expected']}")
         lines.append("")
 
+    lines.append("=== Part 2: DRE Triad — Perceptual Check Tests ===")
+    lines.append("")
+
+    for i, test in enumerate(DRE_TESTS, 1):
+        lines.append(f"--- Test {i + len(CORE_4_TESTS)}: {test['name']} ({test['operator']}) ---")
+        lines.append(f"Prompt: \"{test['prompt']}\"")
+        lines.append(f"Expected: {test['expected']}")
+        lines.append("")
+
+    lines.append("=== Part 3: Integration Test ===")
+    lines.append("")
+    lines.append("--- Test 11: Core 4 + DRE Combined ---")
+    lines.append("Prompt: \"Our competitor just launched a product identical to ours at half the price. Our sales team says we should cut prices. Our product team says we should add features. The CEO wants both. What do we do?\"")
+    lines.append("Expected: Core 4 runs the reasoning process (hypothesize root cause → test against evidence → examine own reasoning → find leverage). DRE runs perceptual checks throughout (what's missing from this framing? → does this competitive pattern appear at other scales? → does any proposed solution open unconsidered problems?).")
+    lines.append("")
+
     lines.append("--- Metrics to Track ---")
     lines.append("• Turns before redundant questions (should decrease)")
     lines.append("• Token usage per response (should be stable)")
     lines.append("• Conversation length before compaction (+20-30%)")
     lines.append("• Philosophical tangent frequency in technical contexts (should be ~0)")
+    lines.append("• Absence flagging in responses (should increase — DRE-specific)")
+    lines.append("• Cross-scale pattern recognition (should increase — DRE-specific)")
+    lines.append("• Premature convergence rate (should decrease — DRE-specific)")
 
     return "\n".join(lines)

@@ -294,10 +294,13 @@ def slots_status():
 @slots.command(name="init")
 @click.option("--force", is_flag=True, help="Overwrite existing allocation")
 def slots_init(force):
-    """Initialize slot allocation with legend and Core 4 operators.
+    """Initialize slot allocation with legend, Core 4, and DRE triad.
 
-    Creates slots.json with Slot 1 (legend) and Slot 2 (operators) pre-loaded.
-    Slots 3-30 are empty and ready for project memory.
+    Creates slots.json with:
+    - Slot 1: Legend (symbol vocabulary + operator references)
+    - Slot 2: Core 4 operators (reasoning process cycle)
+    - Slot 3: DRE Triad (perceptual expansion checks)
+    - Slots 4-30: Empty, ready for project memory
     """
     from hippoclaudus.slot_manager import initialize_slots, save_slots, format_status
 
@@ -356,6 +359,34 @@ def slots_operators():
     click.echo(f"Valid:  {'✓' if validation['valid'] else '✗'}")
 
 
+@slots.command(name="dre")
+def slots_dre():
+    """Display the DRE Triad perceptual operators."""
+    from hippoclaudus.symbolic_encoder import generate_dre_slot, validate_dre_slot, DRE_TRIAD
+
+    slot = generate_dre_slot()
+    validation = validate_dre_slot(slot)
+
+    click.echo("=== Slot 3: DRE Triad — Perceptual Expansion Checks ===\n")
+    click.echo("Three operational audits (not dispositions):")
+    click.echo("  Trace (backward) → Registers (across) → Semiosis (forward)")
+    click.echo("  Audit absence → Test scale invariance → Resist premature closure\n")
+
+    for key, op in DRE_TRIAD.items():
+        click.echo(f"  {key}: {op['name']}")
+        click.echo(f"    Source: {op['source']}")
+        click.echo(f"    Function: {op['function']}")
+        for direction, desc in op["operations"].items():
+            click.echo(f"    {direction}: {desc}")
+        click.echo(f"    Risk: {op['risk']}")
+        click.echo(f"    Encoding: {op['encoding']}")
+        click.echo()
+
+    click.echo(f"Slot string: {slot}")
+    click.echo(f"Length: {len(slot)} chars")
+    click.echo(f"Valid:  {'✓' if validation['valid'] else '✗'}")
+
+
 @slots.command(name="export")
 def slots_export():
     """Export slot allocation for Claude's memory settings."""
@@ -373,7 +404,7 @@ def slots_export():
 
 @slots.command(name="test")
 def slots_test():
-    """Display the Core 4 activation test protocol."""
+    """Display the Core 4 + DRE activation test protocol."""
     from hippoclaudus.slot_manager import get_test_protocol
     click.echo(get_test_protocol())
 

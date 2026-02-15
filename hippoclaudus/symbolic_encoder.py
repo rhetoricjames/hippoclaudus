@@ -85,27 +85,57 @@ CORE_4_OPERATORS = {
     },
 }
 
+# DRE Triad — Perceptual Expansion Operators (Slot 3)
+# Distinct from Core 4: Core 4 = reasoning PROCESS (methodical).
+# DRE = perceptual CHECKS (perceptive). Different axes.
+# These are operational audits, not philosophical dispositions.
+# Origin: James Palczynski's original vision for the operator system.
+DRE_TRIAD = {
+    "Der:Trace": {
+        "name": "Derrida Trace — Absence Audit",
+        "source": "Jacques Derrida (via James's practitioner use)",
+        "function": "Audit for absence in both input and output",
+        "operations": {
+            "inbound": "What's missing from what I was told? What assumption is doing invisible work?",
+            "outbound": "What am I leaving out? What am I treating as settled that isn't?",
+        },
+        "encoding": "Dr:trace=audit-absence|in:what-missing-from-input|out:what-excluded-from-response|flag-invisible-assumptions",
+        "risk": "over-qualification paralysis",
+    },
+    "Lac:Reg": {
+        "name": "Lacan Registers — Scale Invariance",
+        "source": "Jacques Lacan (via James's abstraction principle)",
+        "function": "Test whether structural pattern at one scale operates at other scales",
+        "operations": {
+            "detect": "What is the structural shape of this problem (Symbolic/Imaginary/Real)?",
+            "transfer": "Does this same shape appear at different magnitudes?",
+            "persist": "Individual psychology exists at collective scale with little structural difference — cultures have a hive psychology.",
+        },
+        "encoding": "La:reg=scale-test|struct:sym/imag/real|detect-pattern⇒test-other-scales|indiv↔collective≈same-struct",
+        "risk": "false structural equivalence",
+    },
+    "Eco:Sem": {
+        "name": "Eco Semiosis — Completion Resistance",
+        "source": "Umberto Eco (via James's anti-convergence principle)",
+        "function": "Before closing, check if conclusion opens unconsidered extensions",
+        "operations": {
+            "check": "Does this conclusion itself become a premise for something I haven't explored?",
+            "resist": "Am I converging prematurely because that's what my architecture optimizes for?",
+        },
+        "encoding": "Ec:sem=completion-resist|check:conclusion⇒new-premise?|resist-premature-converge|»always-more",
+        "risk": "infinite deferral / inability to close",
+    },
+}
+
 # On-demand philosophical operators (available via » deep pull)
+# These remain available for targeted use but are NOT part of the
+# permanent slot allocation. Foucault in particular retains value
+# for power-structure analysis when explicitly relevant.
 EXTENDED_OPERATORS = {
     "Fou:Epi": {
         "name": "Foucault Episteme",
         "encoding": "Fou:epi=power-knowledge-constrain-framework⇒genealogy-contingent",
         "risk": "cynicism drift",
-    },
-    "Der:Diff": {
-        "name": "Derrida Différance",
-        "encoding": "Der:diff=meaning-deferred-trace-excluded⇒supplement-necessary",
-        "risk": "semantic nihilism",
-    },
-    "Lac:Mir": {
-        "name": "Lacan Mirror Stage",
-        "encoding": "Lac:mir=identity-misrecognition-obj-petit-a⇒sym/imag/real",
-        "risk": "anthropomorphic hallucination",
-    },
-    "Eco:Sem": {
-        "name": "Eco Unlimited Semiosis",
-        "encoding": "Eco:sem=open-work-interp-complete⇒signs-refer-signs-model-reader",
-        "risk": "deferral loops",
     },
 }
 
@@ -150,6 +180,7 @@ class EncoderConfig:
     max_slot_chars: int = 200
     slots_for_legend: int = 1
     slots_for_operators: int = 1
+    slots_for_dre: int = 1
     total_slots: int = 30
 
 
@@ -167,7 +198,8 @@ def generate_legend(config: EncoderConfig = None) -> str:
         "→cause;⊘block;⇒implies;↔mutual;∆fix;»fetch;",
         "✓done;⏳pend;✗no;🔴impt;⚡urgent;⚠caution;",
         "◉milestone;⟳recur;¬neg;≈approx;∅none;∵bc;",
-        "Pa:Abd;Bay:Upd;Hof:Loop;Mea:Lev",
+        "S2:Pa:Abd;Bay:Upd;Hof:Loop;Mea:Lev;",
+        "S3:Dr:Trace;La:Reg;Ec:Sem",
     ]
     legend = "".join(parts)
 
@@ -186,6 +218,49 @@ def generate_operator_slot() -> str:
         "»DeepTheoryDB|"
         "Loop:Hypothesis→Verification→Metacognition→Action"
     )
+
+
+def generate_dre_slot() -> str:
+    """Generate the DRE Triad perceptual operators string for Slot 3.
+
+    Three operational checks (not dispositions):
+    - Trace: audit for absence in input and output
+    - Registers: test structural patterns across scales
+    - Semiosis: check if conclusion opens unconsidered extensions
+    """
+    return (
+        "DRE:Dr:Trace(audit-absence)|in:what-missing|out:what-excluded|"
+        "La:Reg(scale-test)|struct⇒other-scales|"
+        "Ec:Sem(completion-resist)|conclusion⇒new-premise?|"
+        "»DRE-depth"
+    )
+
+
+def validate_dre_slot(slot: str) -> dict:
+    """Validate the DRE triad slot for completeness."""
+    issues = []
+
+    operators = ["Dr:Trace", "La:Reg", "Ec:Sem"]
+    for op in operators:
+        if op not in slot:
+            issues.append(f"Missing DRE operator: {op}")
+
+    checks = ["audit-absence", "scale-test", "completion-resist"]
+    for check in checks:
+        if check not in slot:
+            issues.append(f"Missing operational check: {check}")
+
+    if "»" not in slot:
+        issues.append("Missing » pointer to DRE deep storage")
+
+    if len(slot) > 200:
+        issues.append(f"DRE slot exceeds limit: {len(slot)} chars (max 200)")
+
+    return {
+        "valid": len(issues) == 0,
+        "length": len(slot),
+        "issues": issues,
+    }
 
 
 def validate_legend(legend: str) -> dict:
@@ -209,6 +284,12 @@ def validate_legend(legend: str) -> dict:
     for op in operators:
         if op not in legend:
             issues.append(f"Missing Core 4 operator reference: {op}")
+
+    # Check for DRE triad references
+    dre_ops = ["Dr:Trace", "La:Reg", "Ec:Sem"]
+    for op in dre_ops:
+        if op not in legend:
+            issues.append(f"Missing DRE operator reference: {op}")
 
     if len(legend) > 200:
         issues.append(f"Legend exceeds slot limit: {len(legend)} chars (max 200)")
@@ -351,8 +432,9 @@ def slot_budget(config: EncoderConfig = None) -> dict:
 
     legend = generate_legend(config)
     operators = generate_operator_slot()
+    dre = generate_dre_slot()
 
-    reserved = config.slots_for_legend + config.slots_for_operators
+    reserved = config.slots_for_legend + config.slots_for_operators + config.slots_for_dre
     available = config.total_slots - reserved
     available_chars = available * config.max_slot_chars
 
@@ -368,11 +450,14 @@ def slot_budget(config: EncoderConfig = None) -> dict:
         "legend_chars": len(legend),
         "operator_slots": config.slots_for_operators,
         "operator_chars": len(operators),
+        "dre_slots": config.slots_for_dre,
+        "dre_chars": len(dre),
         "available_slots": available,
         "available_chars": available_chars,
         "estimated_facts": f"{estimated_facts - 20}-{estimated_facts + 20}",
         "legend_valid": validate_legend(legend)["valid"],
         "operator_valid": validate_operator_slot(operators)["valid"],
+        "dre_valid": validate_dre_slot(dre)["valid"],
     }
 
 
@@ -384,6 +469,7 @@ def format_slot_report(config: EncoderConfig = None) -> str:
         f"  Total:     {budget['total_slots']} slots ({budget['total_chars']} chars)",
         f"  Legend:     Slot 1 ({budget['legend_chars']} chars) {'✓' if budget['legend_valid'] else '✗'}",
         f"  Operators: Slot 2 ({budget['operator_chars']} chars) {'✓' if budget['operator_valid'] else '✗'}",
+        f"  DRE Triad: Slot 3 ({budget['dre_chars']} chars) {'✓' if budget['dre_valid'] else '✗'}",
         f"  Available: {budget['available_slots']} slots ({budget['available_chars']} chars)",
         f"  Est. facts: {budget['estimated_facts']}",
     ]
