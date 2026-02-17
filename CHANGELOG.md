@@ -4,6 +4,34 @@ All notable changes to Hippoclaudus will be documented in this file.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [4.0.0] - 2026-02-16
+
+### Added
+- **Cognitive Subroutines in CLAUDE.md** — operators are now plain English procedural instructions, not symbolic tokens in memory slots. CLAUDE.md loads every turn with high attention weight, making it the correct architecture for behavioral activation.
+- **V4_SPEC.md** — full architectural specification documenting all v4 design decisions
+- **Token economics analysis** — documented that Unicode symbols cost 2-3 tokens each (UTF-8 fallback in BPE) vs. 1 token per English word. Symbols save characters but cost ~1.5-1.8× more tokens. Decision: symbols for memory slots (character-constrained), English for CLAUDE.md (token-constrained).
+- **Cooperative slot management** — Anthropic's native memory system writes first, MCP post-pass fills remaining capacity, end-of-session directive captures context before compaction
+- **Default Mode Network (DMN)** — empty slots populated with loosely-related content (similarity 0.4-0.7) for associative creative connection
+- **`format_cognitive_subroutines()`** in symbolic_encoder.py — generates the CLAUDE.md subroutines section programmatically
+- **Lexical attention engineering** — sparse synonym selection for higher attention weight at same token cost
+
+### Changed
+- **Operators moved from memory slots to CLAUDE.md** — the core architectural change. Memory slots are declarative storage (model treats contents as facts); CLAUDE.md is procedural (loaded as instructions). Operators need procedural placement.
+- **Peirce Abduction corrected** — from "generate surprising hypotheses" (output-focused) to "what doesn't fit the expected pattern?" (input-focused anomaly detection). Surprise is in the INPUT, not the OUTPUT.
+- **Legend relocated** from locked Slot 1 to MCP memory (on-demand fetch via `memory_search`). Most symbols are self-documenting from training data.
+- **All 30 slots now available** — no reserved slots for legend, operators, or DRE. Cooperative management replaces locked allocation.
+- **slot_manager.py rewritten** — removed all reserved slot logic, added `empty_slots` property, DMN capacity warnings, cooperative Anthropic-first philosophy
+- **symbolic_encoder.py rewritten** — removed `generate_operator_slot()`, `generate_dre_slot()`, added `CORE_4_SUBROUTINES` and `DRE_SUBROUTINES` dicts with corrected framing, added `format_cognitive_subroutines()`
+- **templates/CLAUDE.md updated** — includes full Cognitive Subroutines section with The Hippoclaudus Loop and DRE Triad
+- **README.md rewritten** — v4 architecture, cognitive subroutines as primary feature, token economics, updated design principles
+- **Unicode markers in CLAUDE.md** — used as attention amplifiers (🔴 > "IMPORTANT"), not compression. Strategic placement creates attention landmarks.
+
+### Removed
+- Locked slot allocation (Slots 1-3 no longer reserved)
+- `generate_operator_slot()` and `generate_dre_slot()` functions
+- Operator slot validation functions
+- V2_RELEASE_NOTES.md and WRITEUP.md references from file tree
+
 ## [1.1.0] - 2026-02-11
 
 ### Added
