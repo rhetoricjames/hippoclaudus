@@ -168,8 +168,7 @@ def copy_templates(paths: dict) -> list:
     base_str = str(paths["base"])
 
     # Long-term memory templates
-    for name in ("INDEX.md", "Total_Update_Protocol.md", "Memory_Bootstrap.md",
-                 "Infrastructure_Notes.md"):
+    for name in ("INDEX.md", "Infrastructure_Notes.md"):
         src = TEMPLATE_DIR / name
         if src.exists():
             dst = paths["long_term"] / name
