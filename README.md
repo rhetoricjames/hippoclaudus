@@ -124,11 +124,16 @@ A Python package that runs a local LLM on your machine to automate memory mainte
 ```
 hippoclaudus/
 ├── README.md                          # You're reading it
-├── V4_SPEC.md                         # Full v4 specification
 ├── CHANGELOG.md                       # Version history
 ├── CONTRIBUTING.md                    # How to contribute
+├── hippo.py                           # CLI entry point
+├── pyproject.toml                     # Package config + entry points
 ├── hippoclaudus/                      # Local AI engine (Python package)
-│   ├── __init__.py
+│   ├── installer.py                   # Core installer (hippo install)
+│   ├── personalizer.py                # Interactive CLAUDE.md customizer
+│   ├── llm_installer.py               # Local LLM setup (MLX / llama-cpp)
+│   ├── platform.py                    # Cross-platform detection
+│   ├── archive_builder.py             # Tier 3 conversation archive + TF-IDF search
 │   ├── llm.py                         # Multi-backend inference
 │   ├── db_bridge.py                   # SQLite bridge to memory.db
 │   ├── consolidator.py                # Session → State Delta compression
@@ -139,61 +144,14 @@ hippoclaudus/
 │   ├── comm_profiler.py               # Relationship pattern analysis
 │   ├── symbolic_encoder.py            # Symbolic compression + subroutine definitions
 │   └── slot_manager.py                # Cooperative slot allocation
-├── templates/
-│   ├── CLAUDE.md                      # Drop into project root (auto-loads in Claude Code)
-│   └── [working memory templates]     # Session logs, decision tracking, etc.
-├── doctor.py                          # Diagnostic tool
-├── install.sh                         # Automated setup
-└── pyproject.toml                     # Package config
+└── templates/
+    ├── CLAUDE.md                      # Installed to project root (auto-loads in Claude Code)
+    ├── INDEX.md                       # Memory catalog
+    ├── Infrastructure_Notes.md        # Hardware/config reference
+    ├── Decision_Log.md                # Working memory
+    ├── Open_Questions_Blockers.md     # Working memory
+    └── Session_Summary_Log.md         # Working memory
 ```
-
-## Quick Start
-
-### Option A: Automated Install (macOS/Linux)
-
-```bash
-git clone https://github.com/rhetoricjames/hippoclaudus.git
-cd hippoclaudus
-bash install.sh
-```
-
-Verify:
-```bash
-python3 doctor.py
-```
-
-### Option B: Manual Install
-
-See the step-by-step instructions in [V4_SPEC.md](V4_SPEC.md).
-
-### Installing the Local AI Engine
-
-**Apple Silicon:**
-```bash
-pip install mlx mlx-lm
-```
-
-**Windows/Linux (NVIDIA GPU):**
-```bash
-CMAKE_ARGS="-DGGML_CUDA=on" pip install llama-cpp-python
-```
-
-**Any platform (CPU):**
-```bash
-pip install llama-cpp-python
-```
-
-Then:
-```bash
-cd hippoclaudus
-pip install -e .
-```
-
-### After Install
-
-1. Copy `templates/CLAUDE.md` to your project root — edit paths to match your setup
-2. The cognitive subroutines section activates automatically in every Claude Code session
-3. (Optional) Export conversation history and run `scan_conversations.py`
 
 ## How the Cognitive Subroutines Work
 
