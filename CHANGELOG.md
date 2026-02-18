@@ -4,6 +4,27 @@ All notable changes to Hippoclaudus will be documented in this file.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [4.1.0] - 2026-02-17
+
+### Added
+- **One-command installation** — `hippo install` sets up the full memory architecture in a single CLI command
+- **Cross-platform installer** — macOS, Linux, Windows with automatic path detection
+- **Auto-configures Claude Desktop** — merges MCP server entry into `claude_desktop_config.json` with timestamped `.bak` backup
+- **`hippo personalize`** — interactive CLAUDE.md customization with `<!-- PERSONALIZE -->` blocks for identity, machine context, and key people
+- **`hippo install --with-llm`** — optional local LLM backend with hardware auto-detection (Apple Silicon MLX, NVIDIA CUDA, CPU fallback)
+- **`hippo uninstall`** — clean teardown with double-confirmation for data removal and config restore from backup
+- **Incremental conversation archive (Tier 3)** — `archive_builder.py` reads Claude Code JSONL transcripts with incremental TF-IDF keyword indexing
+- **New modules:** `platform.py`, `installer.py`, `personalizer.py`, `llm_installer.py`
+- **Generic CLAUDE.md template** with `<!-- PERSONALIZE -->` blocks for user customization
+- **`.hippoclaudus` dotfile** for install metadata tracking
+- **Integration test suite** — full install/uninstall round-trip tests
+- **Entry points** registered in `pyproject.toml` (`hippo` CLI command)
+
+### Changed
+- Version bumped to 4.1.0
+- `templates/CLAUDE.md` genericized — personal content replaced with PERSONALIZE blocks
+- Tier 3 updated to reference `archive_builder` instead of legacy conversation JSON export
+
 ## [4.0.0] - 2026-02-16
 
 ### Added

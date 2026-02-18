@@ -4,6 +4,43 @@
 
 Named after the hippocampus — the brain's memory formation center. A three-tier system that gives Claude persistent, structured recall across sessions, plus a local LLM engine for automated maintenance and a cognitive subroutine system that expands *how* the model reasons.
 
+## Installation
+
+```bash
+pip install hippoclaudus
+hippo install
+```
+
+That's it. The installer:
+- Creates the three-tier memory directory structure
+- Sets up the MCP memory server
+- Configures Claude Desktop automatically (with backup)
+- Installs a CLAUDE.md with cognitive subroutines
+
+### Personalize
+
+```bash
+hippo personalize
+```
+
+Customizes CLAUDE.md with your name, work context, and key people.
+
+### Add Local LLM (Recommended)
+
+```bash
+hippo install --with-llm
+```
+
+Installs a small local AI that handles memory search, consolidation, and tagging — so Claude doesn't have to spend tokens on it.
+
+### Uninstall
+
+```bash
+hippo uninstall
+```
+
+Cleanly removes Hippoclaudus and restores your Claude config from backup.
+
 ## The Problem
 
 Every Claude session starts cold. You re-explain context, re-establish preferences, re-describe your project. The built-in memory slots help, but they're shallow. For ongoing collaborations — building a product, managing a business, any sustained creative or technical work — you need more.
