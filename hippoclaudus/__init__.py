@@ -4,4 +4,4 @@ v4.0: Cognitive subroutines in CLAUDE.md, cooperative slot management, token eco
 Cross-platform: uses MLX on Apple Silicon, llama-cpp-python everywhere else.
 """
 
-__version__ = "4.0.0"
+__version__ = "4.1.0"

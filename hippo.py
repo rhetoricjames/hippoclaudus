@@ -416,5 +416,145 @@ def slots_budget():
     click.echo(format_slot_report())
 
 
+# --- v4.1 Installer Commands ---
+
+@cli.command()
+@click.option("--path", type=click.Path(), default=None,
+              help="Custom install location (default: ~/Documents/Claude)")
+@click.option("--with-llm", is_flag=True, help="Also install the local LLM backend")
+def install(path, with_llm):
+    """Install the Hippoclaudus memory architecture.
+
+    Creates directory structure, sets up MCP memory server,
+    configures Claude Desktop, and drops a CLAUDE.md template.
+    """
+    from hippoclaudus.installer import run_install, LLM_RECOMMENDATION, InstallerError
+    from hippoclaudus.llm_installer import run_install_llm
+    from hippoclaudus.platform import resolve_install_paths
+
+    try:
+        base = Path(path) if path else None
+        result = run_install(base_path=base, with_llm=with_llm)
+
+        click.echo("")
+        click.echo("  ✓ Hippoclaudus v4.1 installed successfully")
+        click.echo("")
+        click.echo(f"    Memory system:  {result['base_path']}/mcp-memory/")
+        click.echo(f"    CLAUDE.md:      {result['base_path']}/CLAUDE.md")
+        bak_msg = f" (backup at {Path(result['backup_path']).name})" if result['backup_path'] else ""
+        click.echo(f"    MCP config:     Updated{bak_msg}")
+        if not result["mcp_verified"]:
+            click.echo("    ⚠ Warning: mcp_memory_service could not be verified")
+        click.echo("")
+        click.echo("  Next steps:")
+        click.echo("  1. Restart Claude Desktop (or Claude Code) to load the MCP memory server")
+        click.echo("  2. Run 'hippo personalize' to customize CLAUDE.md with your identity and context")
+        click.echo("  3. Start a new Claude session — the memory system is active")
+        click.echo("")
+
+        if with_llm:
+            paths = resolve_install_paths(Path(result["base_path"]))
+            run_install_llm(paths["venv"], paths["models"])
+        else:
+            click.echo(LLM_RECOMMENDATION)
+            click.echo("")
+
+    except InstallerError as e:
+        click.echo(str(e), err=True)
+        raise SystemExit(1)
+
+
+@cli.command()
+def uninstall():
+    """Uninstall Hippoclaudus and restore Claude config.
+
+    Restores the Claude Desktop config from backup.
+    Optionally removes memory data (with double confirmation).
+    """
+    from hippoclaudus.installer import run_uninstall, InstallerError
+
+    try:
+        # First confirmation — data removal
+        remove_data = click.confirm(
+            "\n  Remove the mcp-memory directory and all stored memories?\n"
+            "  This is irreversible.",
+            default=False,
+        )
+
+        if remove_data:
+            really_remove = click.confirm(
+                "\n  These files have not been backed up by this process.\n"
+                "  If you have not backed them up elsewhere, they will be\n"
+                "  permanently lost.\n\n"
+                "  Are you sure you want to remove all of Claude's memories?",
+                default=False,
+            )
+            remove_data = really_remove
+
+        result = run_uninstall(remove_data=remove_data)
+
+        click.echo("")
+        click.echo("  ✓ Hippoclaudus uninstalled")
+        if result["config_restored_from"]:
+            click.echo(f"    Config restored from: {result['config_restored_from']}")
+        else:
+            click.echo("    Config: removed 'memory' server entry")
+        if result["data_removed"]:
+            click.echo("    Memory data: removed")
+        else:
+            click.echo("    Memory data: preserved (still on disk)")
+        click.echo("")
+
+    except InstallerError as e:
+        click.echo(str(e), err=True)
+        raise SystemExit(1)
+
+
+@cli.command()
+def personalize():
+    """Customize CLAUDE.md with your identity and context.
+
+    Interactive prompts for your name, Claude persona name,
+    work type, key people, and machine description.
+    Re-runnable — updates existing personalization.
+    """
+    from hippoclaudus.personalizer import run_personalize
+    from hippoclaudus.platform import read_dotfile, get_dotfile_path
+
+    dotfile = get_dotfile_path()
+    meta = read_dotfile(dotfile)
+
+    if meta is None:
+        click.echo("✗ No Hippoclaudus installation found.")
+        click.echo("  Run 'hippo install' first.")
+        raise SystemExit(1)
+
+    claude_md = Path(meta["install_path"]) / "CLAUDE.md"
+    run_personalize(claude_md)
+
+
+@cli.command(name="install-llm")
+def install_llm():
+    """Install the local LLM backend (after initial install).
+
+    Detects your hardware (Apple Silicon / NVIDIA / CPU),
+    installs the appropriate inference backend, and downloads
+    the default model (~4GB).
+    """
+    from hippoclaudus.llm_installer import run_install_llm
+    from hippoclaudus.platform import read_dotfile, get_dotfile_path, resolve_install_paths
+
+    dotfile = get_dotfile_path()
+    meta = read_dotfile(dotfile)
+
+    if meta is None:
+        click.echo("✗ No Hippoclaudus installation found.")
+        click.echo("  Run 'hippo install' first.")
+        raise SystemExit(1)
+
+    paths = resolve_install_paths(Path(meta["install_path"]))
+    run_install_llm(paths["venv"], paths["models"])
+
+
 if __name__ == "__main__":
     cli()
