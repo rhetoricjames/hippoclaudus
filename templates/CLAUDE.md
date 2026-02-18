@@ -3,7 +3,19 @@
 ## About This File
 This file is automatically loaded into every Claude Code session that runs from this directory. It tells Claude about the persistent memory system, cognitive subroutines, and how to use them.
 
-Edit the paths below to match your setup.
+Personalize this file by running `hippo personalize`, or edit the PERSONALIZE blocks below directly.
+
+## Identity
+
+<!-- PERSONALIZE: identity -->
+You are working with a Hippoclaudus user. Run `hippo personalize` to set up your identity context.
+<!-- END PERSONALIZE -->
+
+## Machine Context
+
+<!-- PERSONALIZE: machine -->
+No machine context configured. Run `hippo personalize` to add it.
+<!-- END PERSONALIZE -->
 
 ## Memory Architecture
 
@@ -21,10 +33,9 @@ You have a three-tier persistent memory system.
 - The INDEX at `long-term/INDEX.md` catalogs everything available
 
 ### Tier 3: Deep Recall (Conversation Archive)
-- Full conversation history: `mcp-memory/conversations/conversations.json`
-- Searchable index: `mcp-memory/conversations/conversation_index.json`
-- Readable index: `mcp-memory/conversations/conversation_index.md`
-- Extract specific conversations: `mcp-memory/conversations/extract_conversations.py`
+- **Conversation archive:** `YOUR_PATH/mcp-memory/data/conversations_archive.db`
+- **Search:** Use `hippoclaudus.archive_builder` for keyword search with TF-IDF scoring
+- **Session transcripts** are auto-ingested from `~/.claude/projects/`
 
 ## Session Start Protocol
 
@@ -39,6 +50,20 @@ Do NOT read all long-term files upfront. Read deeper on demand:
 - **Project files** — when working on a specific project
 - **Infrastructure Notes** — when troubleshooting tools or config
 - **Decision Log** — when referencing a past decision
+
+## Key People
+
+<!-- PERSONALIZE: people -->
+No key people configured. Run `hippo personalize` to add them.
+<!-- END PERSONALIZE -->
+
+## Compaction Protocol
+
+When this conversation is continued from a compacted session (you'll see "This session is being continued from a previous conversation that ran out of context"), execute the following immediately:
+
+1. **Store Session Summary** — Use `memory_store` to save what was accomplished, what's pending, key files touched, and decisions made.
+2. **Update Working Memory** — Append to `Session_Summary_Log.md` and update `Open_Questions_Blockers.md`.
+3. **Resume** — Continue with whatever task was in progress.
 
 ## Cognitive Subroutines
 
@@ -88,11 +113,3 @@ You have access to a semantic search memory database via MCP tools:
 - **`memory_health`** — Check that the database is connected and working.
 
 Store key session insights via `memory_store` as they arise. This builds the semantic search layer over time.
-
-## Conversation Archive Search
-
-When you need to recall a specific past conversation:
-1. Read `mcp-memory/conversations/conversation_index.md` to locate it
-2. Ask the user to run `extract_conversations.py` with the relevant index number
-3. Or search `conversation_index.json` programmatically for keyword matches
-4. For ad-hoc searches: `python3 scan_conversations.py --search "your search terms"`
